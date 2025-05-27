@@ -1,4 +1,4 @@
-name: Deploy WZML-X to Heroku 
+name: Deploy Aeon-MLTB to Heroku
 
 on:
   workflow_dispatch:
@@ -30,29 +30,36 @@ on:
       TELEGRAM_HASH:
         description: "Telegram HASH from https://my.telegram.org/"
         required: true
-      UPSTREAM_REPO:
-        description: "Upstream Repo of your Fork or Main Repo"
-        required: true
-      
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Deploy Branch
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Clean File(s)
+      - name: Delete unnecessary directories and files
         run: |
-          for file in README.md wzv3_hk_deploy.ipynb; do
-            [ -f "$file" ] && echo "Deleting: $file" && rm -f "$file" || echo "Not found: $file"
+          # Directories to delete
+          for dir in bot qBittorrent web; do
+            if [ -d "./$dir" ]; then
+              echo "Deleting directory: $dir"
+              rm -rf ./$dir
+            else
+              echo "Directory not found: $dir"
+            fi
           done
 
-      - name: Install Heroku CLI
-        run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
+          # Delete aria.sh if it exists
+          if [ -f "./aria.sh" ]; then
+            echo "Deleting file: aria.sh"
+            rm -f ./aria.sh
+          else
+            echo "File not found: aria.sh"
+          fi
 
-      - name: Deploy Repo to Heroku
-        uses: akhileshns/heroku-deploy@v3.13.15
+      - name: Deploy to Heroku
+        uses: 5hojib/heroku-deploy-action@v2
         with:
           heroku_api_key: ${{inputs.HEROKU_API_KEY}}
           heroku_app_name: ${{inputs.HEROKU_APP_NAME}}
@@ -68,4 +75,5 @@ jobs:
           HD_TELEGRAM_HASH: ${{inputs.TELEGRAM_HASH}}
           HD_DATABASE_URL: ${{inputs.DATABASE_URL}}
           HD_BOT_TOKEN: ${{inputs.BOT_TOKEN}}
-          HD_UPSTREAM_REPO: ${{inputs.UPSTREAM_REPO}}
+          HD_HEROKU_APP_NAME: ${{inputs.HEROKU_APP_NAME}}
+          HD_HEROKU_API_KEY: ${{inputs.HEROKU_API_KEY}}

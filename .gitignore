@@ -4,12 +4,16 @@ token.pickle
 rclone.conf
 .netrc
 log.txt
+cfg.zip
 accounts/*
-Thumbnails/*
+MediaInfo/*
+Images/*
+thumbnails/*
 rclone/*
 tokens/*
 sabnzbd/*
 list_drives.txt
+shorteners.txt
 cookies.txt
 downloads/*
 *.session
